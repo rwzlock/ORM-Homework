@@ -26,7 +26,7 @@ session = Session(engine)
 
 app = Flask(__name__)
 
-
+#Create root directory with list of all available pages
 @app.route("/")
 def home():
     return (
@@ -38,6 +38,7 @@ def home():
         f"/api/v1.0/<start>/<end><br/>"
     )
 
+#Precipitation page, finds all temperature data taken in the last year
 @app.route("/api/v1.0/precipitation")
 def precipitation():
     results = session.query(Measurements.tobs).\
@@ -46,7 +47,7 @@ def precipitation():
 
     return jsonify(last_year_temps_and_dates)
 
-
+#Stations page, finds all stations
 @app.route("/api/v1.0/stations")
 def stations():
     """Return a list of all stations"""
@@ -56,6 +57,7 @@ def stations():
 
     return jsonify(all_stations)
 
+#Observed temperature page, takes all temperatures in the last year (identical to precipitation page)
 @app.route("/api/v1.0/tobs")
 def temperatures():
     results = session.query(Measurements.tobs).\
@@ -64,6 +66,7 @@ def temperatures():
 
     return jsonify(last_year_temps)
 
+#Queries min average and max temperature after a certain start date
 @app.route("/api/v1.0/<start>")
 def start(start):
     results = session.query(func.min(Measurements.tobs), func.avg(Measurements.tobs), func.max(Measurements.tobs)).\
@@ -72,6 +75,7 @@ def start(start):
 
     return jsonify(start_date_temps_statistics)
 
+#Queries min average and max temperature in a date range defined by a start and end date
 @app.route("/api/v1.0/<start>/<end>")
 def startend(start, end):
     results = session.query(func.min(Measurements.tobs), func.avg(Measurements.tobs), func.max(Measurements.tobs)).\
@@ -81,6 +85,6 @@ def startend(start, end):
 
     return jsonify(startend_date_temps_statistics)
 
-
+#Runs the Flask App
 if __name__ == '__main__':
     app.run(debug=True)
